@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reirus Tunes</title>
+  <link rel="stylesheet" href="/static/css/styles.css" />
+</head>
+
+<body>
+  <div class="background">
+    <header>
+      <h1>REIRUS <span class="Tunes">TUNES</span></h1>
+      <div class="buttons">
+        <button href="#" id="register" class="button">Regístrate</button>
+        <button href="#" id="login" class="button">Inicia sesión</button>
+      </div>
+    </header>
+
+    <section class="main-section">
+      <div class="content">
+        <h2>Toda la música a tu alcance</h2>
+        <p>Escribe el nombre de la canción que deseas descargar</p>
+        <div class="search-bar">
+          <textarea id="song-names" class="animated-textarea" placeholder="Buscar canción"></textarea>
+          <button id="download-btn" onclick="sendSongs()">Descargar</button>
+        </div>
+      </div>
+    </section>
+  </div>
+  <div class="background">
+    <section class="playlist-section">
+      <img src="./static/Vector2.png" alt="vector" class="vector" />
+      <img src="./static/Vector.png" alt="vector" class="vector2" />
+      <div class="contentPlaylist">
+        <h3>Genera playlists personalizadas en segundos</h3>
+        <p>Escribe el nombre de tus artistas favoritos</p>
+        <textarea type="text" class="animated-textarea"
+          placeholder="Ejemplo: Taylor Swift, Drake, Ed Sheeran, etc."></textarea>
+
+        <p>Escribe tus generos favoritos</p>
+        <textarea type="text" class="animated-textarea" placeholder="Ejemplo: Pop, Rap, Punk ,rock,etc."></textarea>
+        <button>Generar playlist</button>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <div class="info">
+      <h1>REIRUS <span class="Tunes">TUNES</span></h1>
+      <p>&copy; 2024 Reirustunes Todos los derechos reservados</p>
+    </div>
+    <div class="legal">
+      <div class="legal-1">
+        <a href="#">Aviso legal</a>
+        <a href="#">Politica de privacidad</a>
+      </div>
+      <div class="legal-2">
+        <a href="">Preguntas frecuentes</a>
+        <a href="#">Terminos y condiciones</a>
+      </div>
+    </div>
+    <div class="social-icons">
+      <p>siguenos en redes sociales</p>
+      <a href="#"><img src="./static/IconI.svg" alt="Instagram" /></a>
+      <a href="#"><img src="./static/IconY.svg" alt="Youtube" /></a>
+      <a href="#"><img src="./static/IconX.svg" alt="X(Twitter)" /></a>
+    </div>
+  </footer>
+  <script src="./static/js/script.js"></script>
+</body>
+
+</html>

@@ -68,12 +68,18 @@ func downloadHandler(c *gin.Context) {
 
 func main() {
 	router := gin.Default()
+	router.Static("/static", "./templates/static")
+	router.LoadHTMLFiles("./templates/index.html")
 
 	// Configurar CORS para permitir solicitudes desde cualquier origen
 	router.Use(cors.Default()) // Habilita CORS
 
 	// Definir la ruta para manejar la descarga de canciones
 	router.POST("/songs", downloadHandler)
+
+	router.GET("/home", func(c *gin.Context) {
+		c.HTML(200, "index.html", nil)
+	})
 
 	// Ejecutar el servidor
 	router.Run(":8080")

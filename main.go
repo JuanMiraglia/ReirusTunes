@@ -5,7 +5,9 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
+	"strings"
 	"sync"
+	"time"
 
 	"github.com/gin-contrib/cors" // Importa el paquete CORS
 	"github.com/gin-gonic/gin"
@@ -18,6 +20,8 @@ type RequestData struct {
 
 // downloadAudio ejecuta yt-dlp para descargar el audio en formato mp3
 func downloadAudio(query string) error {
+	currentTime := time.Now()
+
 	searchQuery := "ytsearch:" + query
 
 	cmd := exec.Command("yt-dlp",
@@ -27,10 +31,29 @@ func downloadAudio(query string) error {
 		"--audio-format", "mp3",
 		searchQuery,
 	)
-
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
-
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	go func(wg *sync.WaitGroup) {
+		defer wg.Done()
+		output, err := cmd.CombinedOutput()
+		if err != nil {
+			fmt.Println("Error: en la funcion 'downloadAudio', no se pudo leer la salida; ", err)
+			fmt.Println(string(output))
+			if strings.Contains(string(output), "Sign in to confirm you're not a bot") {
+				fmt.Println("Se a detectado un bloqueo por Youtube")
+				file_log, err := os.OpenFile("./logs/blocked.json", os.O_CREATE|os.O_APPEND|os.O_EXCL, os.ModeAppend)
+				if err != nil {
+					fmt.Println("Error: No se pudo abrir 'logs.json'; ", err)
+					os.Mkdir("logs", os.ModeAppend)
+				}
+				file_log.WriteString(fmt.Sprint("Fecha: ", currentTime, "; Blocked by Youtube."))
+				// Aqui la funcion de cambio de IP
+			}
+		}
+	}(wg)
+	wg.Wait()
 	fmt.Printf("Descargando audio para: %s\n", query)
 	return cmd.Run()
 }

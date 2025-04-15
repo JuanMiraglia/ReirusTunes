@@ -6,14 +6,15 @@ function sendSongs() {
         return;
     }
 
-    let songs = songList.split("\n").map(song => song.trim()).filter(song => song !== "");
+    let songs = songList.split("\n").map(song => song.trim()).filter(song => song !== "").join(", ");
+
 
     fetch("http://localhost:8080/songs", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ songs })
+        body: JSON.stringify({ "songname": songs })
     })
         .then(response => response.json())
         .then(data => alert(data.message))

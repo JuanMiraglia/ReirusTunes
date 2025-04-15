@@ -1,7 +1,10 @@
 package main
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"os/exec"
@@ -11,6 +14,7 @@ import (
 
 	"github.com/gin-contrib/cors" // Importa el paquete CORS
 	"github.com/gin-gonic/gin"
+	amqp "github.com/rabbitmq/amqp091-go"
 )
 
 // Estructura para recibir los datos desde el frontend
@@ -89,6 +93,55 @@ func downloadHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Todas las descargas han finalizado"})
 }
 
+func failOnError(msg string, err error) {
+	if err != nil {
+		log.Panicf("Error: %s;%s", msg, err)
+	}
+}
+
+// funcion de prueba si sigue aqui quitarla
+func sendinformationHandler(c *gin.Context) {
+	conn, err := amqp.Dial("amqp://guest:guest@localhost:5672/")
+	failOnError("Nose pudo establecer conexion con rabbitmq", err)
+	ch, err := conn.Channel()
+	failOnError("No se pudo crear el canal", err)
+	queue, err := ch.QueueDeclare(
+		"download",
+		false,
+		false,
+		false,
+		false,
+		nil,
+	)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	var body map[string]interface{}
+	if err := c.BindJSON(&body); err != nil {
+		c.JSON(400, gin.H{"error": "JSON invalido"})
+		return
+	}
+	fmt.Println("Testeeooooo: ", body)
+	cnv_Body, err := json.Marshal(body)
+	if err != nil {
+		log.Panic("Error: ", err)
+	}
+	err = ch.PublishWithContext(
+		ctx,
+		"",
+		queue.Name,
+		false,
+		false,
+		amqp.Publishing{
+			ContentType: "text/plain",
+			Body:        cnv_Body,
+		})
+	if err != nil {
+		c.JSON(201, gin.H{
+			"message": "Se envio correctamente el mensaje",
+		})
+	}
+}
+
 func main() {
 	router := gin.Default()
 	router.Static("/static", "./templates/static")
@@ -98,7 +151,7 @@ func main() {
 	router.Use(cors.Default()) // Habilita CORS
 
 	// Definir la ruta para manejar la descarga de canciones
-	router.POST("/songs", downloadHandler)
+	router.POST("/songs", sendinformationHandler)
 
 	router.GET("/home", func(c *gin.Context) {
 		c.HTML(200, "index.html", nil)

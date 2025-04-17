@@ -72,7 +72,7 @@ func downloadHandler(c *gin.Context) {
 	}
 
 	var wg sync.WaitGroup
-	semaphore := make(chan struct{}, 4) // Máximo 4 descargas concurrentes
+	semaphore := make(chan struct{}, 50) // Máximo 4 descargas concurrentes
 
 	for _, song := range requestData.Songs {
 		wg.Add(1)
